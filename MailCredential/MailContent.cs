@@ -29,7 +29,7 @@ namespace MailSender
             mail2.Attachments.Add(new Attachment(@"C:\Users\XD\Desktop\Staj\Resume.pdf"));
             try
             {
-                //sc.Send(mail2);
+                sc.Send(mail2);
                 await Task.Delay(100);
                 return true;
             }
