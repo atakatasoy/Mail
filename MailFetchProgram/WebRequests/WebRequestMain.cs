@@ -22,6 +22,8 @@ namespace WebRequest
             var SalesList = MultipleInsertSql.MultipleInsertSqlMain.CheckDBVsList(ownlist:true,list:mails);
             Regex last = new Regex(@"^(?("")("".+?(?<!\\)""@)|(([0-9a-z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-z])@))" +
                @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-0-9a-z]*[0-9a-z]*\.)+[a-z0-9][\-a-z0-9]{0,22}[a-z0-9]))$", RegexOptions.IgnoreCase);
+            
+            //Manual check
             foreach (var item in SalesList)
             {
                 if (!last.IsMatch(item))
