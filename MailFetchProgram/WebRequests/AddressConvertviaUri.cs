@@ -49,7 +49,7 @@ namespace WebRequest
                     success = true;
                 }
             }
-            if (success == true) return true;
+            if (success) return true;
             return false;
         }
         private string FetchWebSites(string html, out string tampon)
