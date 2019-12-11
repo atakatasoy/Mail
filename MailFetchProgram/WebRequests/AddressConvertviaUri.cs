@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Threading;
 
 namespace WebRequest
 {
@@ -17,13 +18,20 @@ namespace WebRequest
 
         public string HTML { get; set; }
 
-        public List<string> SiteAddresses = new List<string>();
+        public int PageCount { get; set; }
 
-        public AddressConvertviaUri(string URL)
+        public List<List<string>> SiteAddresses = new List<List<string>>();
+
+        public AddressConvertviaUri(string URL,int count)
         {
             BaseURL = URL;
+
+            PageCount = count;
+
             Request= (HttpWebRequest)System.Net.WebRequest.Create(BaseURL);
+
             GetHTML();
+
             FillList();
         }
         private void GetHTML()
@@ -37,19 +45,24 @@ namespace WebRequest
         }
         private bool FillList()
         {
+            SiteAddresses.Add(new List<string>());
             var yeni = HTML;
+
             bool success = false;
+
             for (; yeni != "";)
             {
                 var site = FetchWebSites(yeni, out yeni);
 
                 if (site != "")
                 {
-                    SiteAddresses.Add(site);
+                    SiteAddresses[SiteAddresses.Count - 1].Add(site);
+
                     success = true;
                 }
             }
-            if (success) return true;
+            if (success == true) return true;
+
             return false;
         }
         private string FetchWebSites(string html, out string tampon)
@@ -59,9 +72,13 @@ namespace WebRequest
             if (s != -1)
             {
                 tampon = html.Substring(s + 14);
+
                 var qq = html.Substring(0, s);
+
                 var href = qq.Substring(qq.LastIndexOf("href=\"") + 6);
+
                 var last = href.Substring(0, href.Length - 1);
+
                 return last;
             }
             tampon = "";
@@ -69,22 +86,31 @@ namespace WebRequest
         }
         public bool NextPage()
         {
+            if (PageCount == 1) return false;
+
             if (PageOrder == 0)
             {
                 PageOrder = 2;
+
                 CurrentURL = BaseURL + $"?page={PageOrder}";
+
                 Request = (HttpWebRequest)System.Net.WebRequest.Create(CurrentURL);
+
                 GetHTML();
-                if (FillList()) return true;
-                return false;
+
+                return FillList();
             }
-            if (PageOrder == 111) return false;
-            PageOrder++;
+            if (PageOrder == PageCount) return false;
+
             CurrentURL = BaseURL + $"?page={PageOrder}";
+
             Request = (HttpWebRequest)System.Net.WebRequest.Create(CurrentURL);
+
             GetHTML();
-            if (FillList()) return true;
-            return false;
+
+            PageOrder++;
+
+            return FillList();
         }
     }
 }
